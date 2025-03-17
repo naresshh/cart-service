@@ -2,8 +2,6 @@ package com.ecom.cart.controller;
 
 import com.ecom.cart.dto.CartItemDTO;
 import com.ecom.cart.service.CartService;
-import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
