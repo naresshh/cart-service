@@ -12,6 +12,7 @@ public class CartItemDTO {
     private String productName;
     private Double price;
     private Integer quantity;
+    private Long customerId;
 
     public Long getId() {
         return id;
@@ -51,5 +52,13 @@ public class CartItemDTO {
 
     public void setQuantity(Integer quantity) {
         this.quantity = quantity;
+    }
+
+    public Long getCustomerId() {
+        return customerId;
+    }
+
+    public void setCustomerId(Long customerId) {
+        this.customerId = customerId;
     }
 }

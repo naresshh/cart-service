@@ -31,7 +31,7 @@ public class CartService {
     private String productServiceBaseUrl;
 
     @Async
-    public CompletableFuture<CartItemDTO> addProductToCart(Long productId, int quantity) {
+    public CompletableFuture<CartItemDTO> addProductToCart(Long productId, int quantity, Long customerId) {
         System.out.println("Thread Info Add: " + Thread.currentThread());
 
         try {
@@ -49,6 +49,7 @@ public class CartService {
                     .productName(product.getName())
                     .price(product.getPrice())
                     .quantity(quantity)
+                    .customerId(customerId)
                     .build();
 
             CartItem savedItem = cartItemRepository.save(cartItem);
@@ -101,13 +102,39 @@ public class CartService {
             throw new RuntimeException("An unexpected error occurred while deleting cart item with ID " + cartItemId + ": " + e.getMessage());
         }
     }
+
+    //For Admins to get all products for all customers
     @Async
     public CompletableFuture<List<CartItemDTO>> getAllCartItems() {
-    List<CartItemDTO> cartItems = cartItemRepository.findAll()
+        List<CartItemDTO> cartItems = cartItemRepository.findAll()
                 .stream()
                 .map(cartItemMapper::toDTO)
                 .toList();
 
         return CompletableFuture.completedFuture(cartItems);
     }
+
+    @Async
+    public CompletableFuture<List<CartItemDTO>> getCartItemsByCustomerId(Long customerId) {
+        List<CartItemDTO> cartItems = cartItemRepository.findByCustomerId(customerId)
+                .stream()
+                .map(cartItemMapper::toDTO)
+                .toList();
+
+        return CompletableFuture.completedFuture(cartItems);
+    }
+
+    public void clearCart(Long customerId) {
+        // Find and delete all CartItems by customerId
+        List<CartItem> cartItems = cartItemRepository.findByCustomerId(customerId);
+
+        if (cartItems.isEmpty()) {
+            throw new RuntimeException("No cart items found for customerId: " + customerId);
+        }
+
+        // Delete all items
+        cartItemRepository.deleteAll(cartItems);
+    }
+
+
 }

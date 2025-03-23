@@ -2,6 +2,7 @@ package com.ecom.cart.controller;
 
 import com.ecom.cart.dto.CartItemDTO;
 import com.ecom.cart.service.CartService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -17,10 +18,9 @@ public class CartController {
         this.cartService = cartService;
     }
 
-    @PostMapping("/add/{productId}")
-    public CompletableFuture<CartItemDTO> addProductToCart(@PathVariable Long productId,
-                                                           @RequestParam int quantity) {
-        return cartService.addProductToCart(productId, quantity);
+    @PostMapping("/add")
+    public CompletableFuture<CartItemDTO> addProductToCart(@RequestBody CartItemDTO request) {
+        return cartService.addProductToCart(request.getProductId(), request.getQuantity(),request.getCustomerId());
     }
 
     @PutMapping("/update/{cartItemId}")
@@ -33,8 +33,15 @@ public class CartController {
        return cartService.deleteCartItem(cartItemId);
     }
 
-    @GetMapping
-    public CompletableFuture<List<CartItemDTO>> getAllCartItems() {
-        return cartService.getAllCartItems();
+    @GetMapping("/{customerId}")
+    public CompletableFuture<List<CartItemDTO>> getAllCartItems(@PathVariable Long customerId) {
+        return cartService.getCartItemsByCustomerId(customerId);
+    }
+
+
+    @DeleteMapping("/clear/{customerId}")
+    public ResponseEntity<Void> clearCart(@PathVariable Long customerId) {
+        cartService.clearCart(customerId);
+        return ResponseEntity.noContent().build(); // Returns HTTP 204 No Content
     }
 }

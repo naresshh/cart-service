@@ -21,6 +21,7 @@ public class CartItem {
     private Long id;
 
     private Long productId;
+    private Long customerId;
     private String productName;
     private Double price;
     private int quantity;
@@ -63,5 +64,13 @@ public class CartItem {
 
     public void setQuantity(int quantity) {
         this.quantity = quantity;
+    }
+
+    public Long getCustomerId() {
+        return customerId;
+    }
+
+    public void setCustomerId(Long customerId) {
+        this.customerId = customerId;
     }
 }
