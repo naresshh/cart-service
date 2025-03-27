@@ -51,9 +51,14 @@ public class CartService {
                     .quantity(quantity)
                     .customerId(customerId)
                     .build();
-
+            CartItem existingItem = cartItemRepository.findByProductNameAndCustomerId(product.getName(),customerId);
+            if(existingItem!=null && existingItem.getCustomerId().equals(customerId)){
+                cartItem.setId(existingItem.getId());
+                cartItem.setQuantity(existingItem.getQuantity()+quantity);
+            }
             CartItem savedItem = cartItemRepository.save(cartItem);
-            return CompletableFuture.completedFuture(cartItemMapper.toDTO(savedItem));
+            CartItemDTO savedDto = cartItemMapper.toDTO(savedItem);
+            return CompletableFuture.completedFuture(savedDto);
 
         } catch (HttpStatusCodeException e) {
             // Inspect ProductService response status
