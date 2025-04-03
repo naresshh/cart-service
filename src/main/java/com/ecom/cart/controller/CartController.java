@@ -10,7 +10,7 @@ import java.util.concurrent.CompletableFuture;
 
 @RestController
 @RequestMapping("/cart")
-@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin(origins = "http://localhost:5173")
 public class CartController {
 
     private final CartService cartService;
@@ -25,9 +25,9 @@ public class CartController {
         return cartItemDTO;
     }
 
-    @PutMapping("/update/{cartItemId}")
-    public CompletableFuture<CartItemDTO> updateCartItem(@PathVariable Long cartItemId, @RequestParam int quantity) {
-        return cartService.updateCartItem(cartItemId, quantity);
+    @PutMapping("/update/{customerId}/{cartItemId}")
+    public CompletableFuture<CartItemDTO> updateCartItem( @PathVariable Integer customerId, @PathVariable Long cartItemId,@RequestParam int quantity) {
+        return cartService.updateCartItem(customerId,cartItemId, quantity);
     }
 
     @DeleteMapping("/delete/{cartItemId}")

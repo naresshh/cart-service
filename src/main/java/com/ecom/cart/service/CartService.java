@@ -45,17 +45,19 @@ public class CartService {
             }
 
             CartItem cartItem = CartItem.builder()
-                    .productId(product.getId())
-                    .productName(product.getName())
-                    .price(product.getPrice())
+                    .productId(product.getProductId().longValue())
+                    .productName(product.getProductTitle())
+                    .price(product.getPriceUnit())
                     .quantity(quantity)
                     .customerId(customerId)
                     .build();
-            CartItem existingItem = cartItemRepository.findByProductNameAndCustomerId(product.getName(),customerId);
+
+            CartItem existingItem = cartItemRepository.findByProductNameAndCustomerId(product.getProductTitle(),customerId);
             if(existingItem!=null && existingItem.getCustomerId().equals(customerId)){
                 cartItem.setId(existingItem.getId());
                 cartItem.setQuantity(existingItem.getQuantity()+quantity);
             }
+
             CartItem savedItem = cartItemRepository.save(cartItem);
             CartItemDTO savedDto = cartItemMapper.toDTO(savedItem);
             return CompletableFuture.completedFuture(savedDto);
@@ -73,12 +75,14 @@ public class CartService {
     }
 
     @Async
-    public CompletableFuture<CartItemDTO> updateCartItem(Long cartItemId, int quantity) {
+    public CompletableFuture<CartItemDTO> updateCartItem(Integer customerId, Long cartItemId, int quantity) {
         try {
-        CartItem item = cartItemRepository.findById(cartItemId)
-                .orElseThrow(() -> new CartItemNotFoundException("Cart item not found"));
+        CartItem item = cartItemRepository.findByCustomerIdAndProductId(customerId,cartItemId);
 
-        item.setQuantity(quantity);
+            if (item == null) {
+                throw new CartItemNotFoundException("Cart item with productId " + cartItemId + " and customerId " + customerId + " not found.");
+            }
+            item.setQuantity(quantity);
         CartItem updatedItem = cartItemRepository.save(item);
 
         return CompletableFuture.completedFuture(cartItemMapper.toDTO(updatedItem));
